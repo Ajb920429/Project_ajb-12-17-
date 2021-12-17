@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+ 
+<mapper namespace="Board">
+	<insert id="save" parameterType="board">
+ 		insert into board_table(b_writer,b_password,b_title,b_contentsl,b_date)
+ 		values(#{b_writer},#{b_password},#{b_title},#{b_contentsl},now())
+ 	</insert>
+ 	
+ 	<select id="findAll" resultType="board">
+ 	select * from board_table
+ 	</select>
+ 	
+	<select id="findById" parameterType="long" resultType="board">
+ 	select * from board_table where b_number=#{b_number}
+ 	</select>
+ 	<update id="hits" parameterType="long">
+ 	update board_table set b_hits=b_hits+1 where b_number=#{b_number}
+ 	</update>
+ 	
+ 	<select id="delete" parameterType="long" >
+ 	delete from board_table where b_number=#{b_number}
+ 	</select>
+ 	
+ 	<update id="update" parameterType="board">
+ 	update  board_table set b_title=#{b_title},b_contentsl=#{b_contentsl} where b_number=#{b_number}
+ 	</update>
+ 	
+ 	<select id="pagingList" parameterType="int" resultType="board">
+		select * from board_table order by b_number desc limit #{pagingStart}, 3
+	</select>
+	
+	<select id="pagingList1" parameterType="java.util.HashMap" resultType="board">
+		select * from board_table order by b_number desc limit #{start}, #{limit}
+	</select>
+	
+	<select id="count" resultType="int">
+		select count(b_number) from board_table
+	</select>
+	
+	<!-- <select id="search" parameterType="java.util.HashMap" resultType="board">
+		select * from board_table where ${type} like concat('%', #{word}, '%')	
+	</select> -->
+
+		<select id="search" parameterType="java.util.HashMap" resultType="board">
+		select * from board_table 			
+		<include refid="sear"></include>
+	</select>
+	
+	<sql id="sear">
+		<choose>
+			<when test="type=='b_title'">
+				where b_title like concat('%', #{word}, '%') 
+			</when>
+			<when test="type=='b_writer'">
+				where b_writer like concat('%', #{word}, '%') 
+			</when>
+		</choose>
+	</sql>
+	
+	<insert id="saveFile" parameterType="board">
+ 		insert into board_table(b_writer,b_password,b_title,b_contentsl,b_date,b_filename)
+ 		values(#{b_writer},#{b_password},#{b_title},#{b_contentsl},now(),#{b_filename})
+ 	</insert>
+ 	
+ 	
+</mapper>
